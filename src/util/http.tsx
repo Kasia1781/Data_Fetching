@@ -7,7 +7,6 @@ export async function get(url: string) {
 	}
 
 	const data = (await response.json()) as unknown;
-    console.log(data)
 
 	return data;
 }
