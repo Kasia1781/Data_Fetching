@@ -1,14 +1,54 @@
-import { useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import { get } from './util/http';
-import { BlogPost } from './components/BlogPosts';
+import BlogPosts, { BlogPost } from './components/BlogPosts';
+import fetchingImg from './assets/data-fetching.png';
 
 function App() {
 	const [fetchedPosts, setFetchedPost] = useState<BlogPost[]>();
+	console.log(fetchedPosts);
 
-	get('https://jsonplaceholder.typicode.com/posts');
+	//typujemy dane które otrzymujemy z API
+	type RawDataBlogPosts = {
+		id: number;
+		userId: number;
+		title: string;
+		body: string;
+	};
 
-	return <h1>Data fetching!</h1>;
+	useEffect(() => {
+		async function fetchPosts() {
+			const data = (await get(
+				'https://jsonplaceholder.typicode.com/posts'
+			)) as RawDataBlogPosts[];
+
+			//Pobrane dane musimy przekonwertować tak aby odpowiadały type BlogPost.
+			const blogPosts: BlogPost[] = data.map((rawPost) => {
+				return {
+					id: rawPost.id,
+					title: rawPost.title,
+					text: rawPost.body,
+				};
+			});
+
+			setFetchedPost(blogPosts);
+		}
+
+		fetchPosts();
+	}, []);
+
+	let content: ReactNode;
+
+	if (fetchedPosts) {
+		content = <BlogPosts posts={fetchedPosts} />;
+	}
+
+	return (
+		<main>
+			<img src={fetchingImg} alt='Image' />
+			{content}
+		</main>
+	);
 }
 
 export default App;
