@@ -1,7 +1,10 @@
 import './App.css';
+import { get } from './util/http';
 
 function App() {
-	return <h1>Hello world!</h1>;
+	get('https://jsonplaceholder.typicode.com/posts');
+
+	return <h1>Data fetching!</h1>;
 }
 
 export default App;
