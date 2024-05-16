@@ -6,6 +6,7 @@ import fetchingImg from './assets/data-fetching.png';
 
 function App() {
 	const [fetchedPosts, setFetchedPost] = useState<BlogPost[]>();
+	const [isFetching, setIsFetching] = useState(false); //stan ładowania
 	console.log(fetchedPosts);
 
 	//typujemy dane które otrzymujemy z API
@@ -18,6 +19,7 @@ function App() {
 
 	useEffect(() => {
 		async function fetchPosts() {
+			setIsFetching(true);
 			const data = (await get(
 				'https://jsonplaceholder.typicode.com/posts'
 			)) as RawDataBlogPosts[];
@@ -30,7 +32,7 @@ function App() {
 					text: rawPost.body,
 				};
 			});
-
+			setIsFetching(false);
 			setFetchedPost(blogPosts);
 		}
 
@@ -41,6 +43,10 @@ function App() {
 
 	if (fetchedPosts) {
 		content = <BlogPosts posts={fetchedPosts} />;
+	}
+
+	if (isFetching) {
+		content = <p id='loading-fallback'>Fetching posts...</p>;
 	}
 
 	return (
